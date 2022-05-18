@@ -1,9 +1,11 @@
 package hello.jdbc.connection;
 
+import com.zaxxer.hikari.HikariDataSource;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -27,7 +29,19 @@ public class ConnectionTest {
         useDataSource(datasource);
     }
 
-    private void useDataSource(DriverManagerDataSource datasource) throws SQLException {
+    @Test
+    void dataSourceConnectionPool() throws SQLException {
+        HikariDataSource dataSource = new HikariDataSource();
+        dataSource.setJdbcUrl(URL);
+        dataSource.setUsername(USERNAME);
+        dataSource.setPassword(PASSWORD);
+        dataSource.setMaximumPoolSize(10);
+        dataSource.setPoolName("MyPool");
+
+        useDataSource(dataSource);
+    }
+
+    private void useDataSource(DataSource datasource) throws SQLException {
         Connection con1 = datasource.getConnection();
         Connection con2 = datasource.getConnection();
         log.info("con1 = {} class = {}", con1, con1.getClass());
